@@ -1,0 +1,12 @@
+<exerciser>
+	<settings>
+		<token>#hide#</token>
+		<placeholder>% --- YOUR CODE HERE --- %</placeholder>
+	</settings>
+
+	<exercise>
+		<file>./rgb2yuv.m</file>
+		<input>./lena.png</input>
+		<outputdir>./out</outputdir>
+	</exercise>
+</exerciser>
