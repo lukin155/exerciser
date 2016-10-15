@@ -83,6 +83,7 @@ classdef Exerciser
       num_outputs = nargout(fname);
       outs = cell(1, num_outputs);
       [outs{:}] = feval(fname, inputs{:});
+      close('all')
       
       % Return to previous dir
       cd(curr_path)
