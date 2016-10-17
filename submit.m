@@ -1,4 +1,4 @@
-function [expected, actual] = submit(function_name)
+function [in, expected, actual] = submit(function_name)
 % Perform a test to see if the given function generates the right outputs for
 % the given input. Inputs and outputs are predefined in a .mat file that is
 % located in the same folder and has the same name (except the extension) as the
@@ -38,7 +38,7 @@ candidate_outputs = cell(1, num_outputs);
 assert(num_outputs == numel(candidate_outputs),
   sprintf('Function returned %d outputs, expected %d.', num_outputs, numel(candidate_outputs)))
 
-correct_num_outputs = 2 == nargout;
+correct_num_outputs = 3 == nargout;
 
 for ii = 1 : num_outputs
   missmatches = candidate_outputs{ii} ~= exp_outputs{ii};
@@ -49,7 +49,7 @@ for ii = 1 : num_outputs
     fprintf('Outputs mismatch.\n');
     if ~correct_num_outputs
       fprintf('Call the script like this to get the epected and actual outputs:\n');
-      fprintf('[expected, actual] = submit(file_name);\n');
+      fprintf('[input, expected, actual] = submit(file_name);\n');
     endif
   endif
 endfor
@@ -57,6 +57,7 @@ endfor
 if correct_num_outputs
   expected = exp_outputs;
   actual = candidate_outputs;
+  in = inputs;
 endif
 
 
