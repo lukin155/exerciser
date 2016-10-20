@@ -1,4 +1,4 @@
-function [in, expected, actual] = submit(function_name)
+function [in, expected, actual] = submit(function_name, epsilon)
 % Perform a test to see if the given function generates the right outputs for
 % the given input. Inputs and outputs are predefined in a .mat file that is
 % located in the same folder and has the same name (except the extension) as the
@@ -7,6 +7,11 @@ function [in, expected, actual] = submit(function_name)
 % NOTE: This function expects a path to a file - relative or absolute.
 
 assert(nargin == 1, "Wrong number of input arguments.")
+narginchk(1,2);
+
+if nargin < 2
+  epsilon = 0;
+endif
 
 [fpath, fname, fext] = fileparts(function_name);
 assert(isempty(fext) || fext == '.m', 'No extension or .m extension was expected.)')
@@ -41,7 +46,7 @@ assert(num_outputs == numel(candidate_outputs),
 correct_num_outputs = 3 == nargout;
 
 for ii = 1 : num_outputs
-  missmatches = candidate_outputs{ii} ~= exp_outputs{ii};
+  missmatches = abs(candidate_outputs{ii} - exp_outputs{ii}) > epsilon;
   s = sum(missmatches(:));
   if (0 == s)
     fprintf('Success!\n');
