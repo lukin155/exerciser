@@ -2,31 +2,35 @@ function [in, expected, actual] = submit(function_name, epsilon)
 % Perform a test to see if the given function generates the right outputs for
 % the given input. Inputs and outputs are predefined in a .mat file that is
 % located in the same folder and has the same name (except the extension) as the
-% funtion being checked.
+% function being checked.
 %
 % NOTE: This function expects a path to a file - relative or absolute.
+% NOTE: The optional argument epsilon (zero by default) defines the allowed
+% tolerance for the difference between the generated result and the expected
+% result.
 
-assert(nargin == 1, "Wrong number of input arguments.")
+% One optional out of two arguments
 narginchk(1,2);
 
+% The default value for the optional argument
 if nargin < 2
   epsilon = 0;
 endif
 
 [fpath, fname, fext] = fileparts(function_name);
-assert(isempty(fext) || fext == '.m', 'No extension or .m extension was expected.)')
+assert(isempty(fext) || fext == '.m', 'The supplied file should have a .m extension or no extension.)')
 
 % Go to the dir where the funciton is
-old_dir = pwd(); % remember for later
+old_dir = pwd(); % save the path, so we can return to it in the end
 cd(fpath)
 
 % Files validation
 results_file = sprintf('%s.result.mat', fname);
-assert(2 == exist(fname), 'Cannot find the supplied function.')
+assert(2 == exist(fname), 'Cannot find the supplied file.')
 assert(2 == exist(results_file),
-  'a matching .result.mat file expected in the same folder where function is located.')
+  'A matching .result.mat file was expected in the same folder where the function file is located.')
 
-% Read the info from result spec
+% Read the info from the result spec
 res = load(results_file);
 
 % Read function inputs
@@ -43,23 +47,24 @@ candidate_outputs = cell(1, num_outputs);
 assert(num_outputs == numel(candidate_outputs),
   sprintf('Function returned %d outputs, expected %d.', num_outputs, numel(candidate_outputs)))
 
-correct_num_outputs = 3 == nargout;
+is_correct_num_outputs = 3 == nargout;
 
+% Compare the outputs
 for ii = 1 : num_outputs
   missmatches = abs(candidate_outputs{ii} - exp_outputs{ii}) > epsilon;
   s = sum(missmatches(:));
   if (0 == s)
     fprintf('Success!\n');
   else
-    fprintf('Outputs mismatch.\n');
-    if ~correct_num_outputs
+    fprintf('Failed! The submitted function did not generate a correct result.\n');
+    if ~is_correct_num_outputs
       fprintf('Call the script like this to get the epected and actual outputs:\n');
       fprintf('[input, expected, actual] = submit(file_name);\n');
     endif
   endif
 endfor
 
-if correct_num_outputs
+if is_correct_num_outputs
   expected = exp_outputs;
   actual = candidate_outputs;
   in = inputs;
